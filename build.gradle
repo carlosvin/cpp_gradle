@@ -1,5 +1,12 @@
 apply plugin: 'cpp'
 
+model {
+    buildTypes {
+        debug
+        release
+    }
+}
+
 libraries {
     hello {}
 }
