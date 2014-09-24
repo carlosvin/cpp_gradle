@@ -1,0 +1,10 @@
+
+#include "Hello.h"
+
+
+int main(int argc, char ** argv)
+{
+	Hello hello ("Mr. Pepito");
+	hello.sayHello(10);
+	return 0;
+}

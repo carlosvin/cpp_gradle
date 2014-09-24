@@ -1,0 +1,14 @@
+apply plugin: 'cpp'
+
+libraries {
+    hello {}
+}
+
+
+executables {
+    main {
+        binaries.all {
+            lib libraries.hello.shared
+        }
+    }
+}
