@@ -5,10 +5,33 @@ model {
         debug
         release
     }
+
+    platforms {
+        x86 {
+            architecture "x86"
+        }
+        x64 {
+            architecture "x86_64"
+        }
+        itanium {
+            architecture "ia-64"
+        }
+    }
+
+    flavors {
+        english
+        spanish
+    }
 }
 
 libraries {
-    hello {}
+ 	hello {
+        binaries.all {
+            if (flavor == flavors.spanish) {
+                cppCompiler.define "SPANISH"
+            }
+        }
+    }
 }
 
 
