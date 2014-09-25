@@ -1,0 +1,481 @@
+%% LyX 2.0.1 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[spanish]{article}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{luainputenc}
+\usepackage{listings}
+\usepackage{babel}
+\addto\shorthandsspanish{\spanishdeactivate{~<>}}
+
+\usepackage{float}
+\usepackage[unicode=true,pdfusetitle,
+ bookmarks=true,bookmarksnumbered=false,bookmarksopen=false,
+ breaklinks=false,pdfborder={0 0 0},backref=false,colorlinks=false]
+ {hyperref}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}
+\providecommand{\algorithmname}{Algoritmo}
+\floatname{algorithm}{\protect\algorithmname}
+
+\makeatother
+
+\begin{document}
+
+\title{Construir un proyecto C++ con Gradle}
+
+\maketitle
+
+\section{Introducción}
+
+La construcción, gestión de dependencias y distribución de mis proyectos
+es algo que cada vez me preocupa más, me gustaría encontrar una herramienta
+que unificara este proceso y fuese independiente del lenguaje, lo
+más parecido con lo que he trabajado ha sido \href{http://www.scons.org/}{SCons},
+\href{http://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html\#Autotools-Introduction}{Autotools},
+\href{http://ant.apache.org/}{Ant}, \href{http://maven.apache.org/}{Maven}
+y últimamente \href{http://www.gradle.org/}{Gradle}. 
+
+Llevo un tiempo haciendo algunas cosas con \href{http://www.gradle.org/}{Gradle},
+pero siempre centrado en proyectos Java utilizándolo como reemplazo
+a Maven, porque que es más sencillo de usar y más rápido. También
+lo he utilizado \href{http://developer.android.com/sdk/installing/studio-build.html}{en projectos Android}
+y he sufrido la pareja \href{http://developer.android.com/sdk/installing/studio-build.html}{Android Studio + Gradle}
+en sus primeros matrimonios (porque yo he querido), actualmente está
+todo mucho más documentado y funciona muy bien. 
+
+Antes de nada hay que decir que la construcción de proyectos C/C++
+y Objective-C con \href{http://www.gradle.org/}{Gradle} se encuentra
+en fase de incubación, aunque ya permite hacer algunas tareas avanzadas
+como:
+\begin{itemize}
+\item Generación de múltiples artefactos dentro del mismo proyecto, esto
+es varias librerías o ejecutables.
+\item Gestionar las dependencias entre estos artefactos (sin versiones).
+\item Generar distintos ``sabores'' de aplicaciones, por ejemplo: podremos
+generar una aplicación ``Community'' y otra con más características
+habilitadas llamada ``Enterprise''.
+\item Permite generar binarios para distintas plataformas, esto depende
+de las cadenas de herramientas (\href{http://es.wikipedia.org/wiki/Cadena_de_herramientas}{Toolchains})
+que tengamos instaladas en la máquina de compilación. 
+\end{itemize}
+Como decía todavía tiene limitaciones, aunque están trabajando en
+ello y \href{http://www.gradleware.com/resources/cpp/}{si consiguen lo que tienen planeado }dejaré
+\href{http://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html\#Autotools-Introduction}{Autotools}
+(me arrepentiré de haber dicho esto).
+
+
+\section{Un caso práctico}
+
+Básicamente he sacado todo el ejemplo de \href{http://www.gradle.org/docs/current/userguide/nativeBinaries.html}{aquí}
+y lo he adaptado a un caso en el que hay varias plataformas y quiero
+generar dos versiones distintas de mi software ``Community'' y ``Enterprise''. 
+
+La aplicación es un ejecutable y una librería dinámica. El ejecutable
+hace uso de esta librería. Ya está, solo quiero mostrar lo que nos
+permite hacer \href{http://www.gradle.org/}{Gradle}.
+
+También nos permitirá generar una versión para distribuir y otra para
+depurar. 
+
+Todo el código se encuentra en \href{https://github.com/carlosvin/cpp_gradle}{https://github.com/carlosvin/cpp\_{}gradle}.
+
+
+\subsection{Estructura del proyecto}
+
+Podemos crear la estructura que queramos, pero resulta más fácil seguir
+la que espera Gradle, para no tener que especificar donde está el
+código fuente. Esta es la estructura del proyecto:
+\begin{description}
+\item [{gradle\_cpp}]~
+
+\begin{description}
+\item [{build.gradle}] Fichero donde se configura el proyecto Gradle, el
+equivalente al build.xml de Ant, al Makefile de C/C++ o al pom.xml
+de Maven.
+\item [{src}] Carpeta donde va todo el código fuente
+
+\begin{description}
+\item [{hello}] Carpeta que contiene el módulo que va a ser la librería
+hello. 
+
+\begin{description}
+\item [{cpp}] Carpeta donde van los fuentes C++.
+
+\begin{description}
+\item [{Hello.cpp}]~
+\end{description}
+\item [{headers}] Carpeta donde val los ficheros de cabeceras. 
+
+\begin{description}
+\item [{Hello.h}]~
+\item [{Msg.h}]~
+\end{description}
+\end{description}
+\item [{main}] Carpeta que contiene el módulo que será el ejecutable que
+utilice la librería hello.
+
+\begin{description}
+\item [{cpp}] Carpeta donde van los fuentes C++.
+
+\begin{description}
+\item [{main.cpp}]~
+\end{description}
+\end{description}
+\end{description}
+\item [{build}] Carpeta que crea Gradle automáticamente donde deja todos
+los resultados sus ejecuciones, en ella encontraremos informes de
+resultados de pruebas, binarios compilados, paquetes para distribuir,
+etc. 
+\end{description}
+\end{description}
+
+\subsection{La aplicación C++}
+
+Va a consistir en un ejecutable que hará uso de la funcionalidad de
+la librería 'hello'. 
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language={C++},tabsize=4]
+#include "Hello.h"
+int main(int argc, char ** argv) 
+{ 	
+	Hello hello ("Pepito");
+	hello.sayHello(10);
+	return 0; 
+}
+\end{lstlisting}
+
+
+\caption{main.cpp}
+
+
+\end{algorithm}
+
+
+Esta librería permite saludar $n$ veces a una persona especificada
+en su constructor. 
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language={C++},tabsize=4]
+class Hello  
+{
+	private:
+		const char * who;
+	public:
+		Hello(const char * who);
+		void sayHello(unsigned n = 1);
+};
+\end{lstlisting}
+
+
+\caption{Hello.h}
+\end{algorithm}
+
+
+
+\subsection{Construyendo con Gradle}
+
+
+\subsubsection{Caso básico}
+
+Lo único que necesitamos para construir nuestra aplicación con Gradle
+es: tener Gradle%
+\footnote{Realmente no es necesario tener instalado Gradle, si utilizamos el
+wrapper, pero esto no lo vamos a tratar hoy,\href{http://www.gradle.org/docs/current/userguide/nativeBinaries.html}{ si queréis más información}.%
+} y el fichero build.gradle.
+
+\begin{algorithm}[H]
+\begin{lstlisting}
+apply plugin: 'cpp'
+
+libraries {  	
+	hello {} 
+}
+executables {     
+	main {
+		binaries.all {
+			lib libraries.hello.shared         
+		}
+    }
+}
+\end{lstlisting}
+\caption{build.gradle}
+\end{algorithm}
+
+
+Con este fichero tan simple, conseguiremos compilar e instalar nuestra
+aplicación, en modo Debug para la plataforma donde estamos ejecutando
+gradle, en mi caso es Linux X64. 
+
+Si ejecutamos desde la raíz de nuestro proyecto gradle task, podremos
+ver todas las tareas que podemos hacer. 
+
+En nuestro caso, solo queremos nuestra aplicación compilada y lista
+para funcionar, así que ejecutaremos: gradle installMainExecutable.
+
+Una vez que ha terminado, podemos ejecutar el programa llamando al
+script %
+\footnote{ .bat en Windows y .sh en Linux%
+}.
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language=sh]
+$ build/install/mainExecutable/main.bat
+1. Hello Mr. Pepito (Community) 
+2. Hello Mr. Pepito (Community) 
+3. Hello Mr. Pepito (Community) 
+4. Hello Mr. Pepito (Community) 
+5. Hello Mr. Pepito (Community) 
+6. Hello Mr. Pepito (Community) 
+7. Hello Mr. Pepito (Community) 
+8. Hello Mr. Pepito (Community) 
+9. Hello Mr. Pepito (Community) 
+10. Hello Mr. Pepito (Community) 
+\end{lstlisting}
+\caption{build/install/mainExecutable/main.bat}
+\end{algorithm}
+
+
+
+\subsubsection{Distintos ``sabores''}
+
+Con unas pocas líneas más, podemos generar distintas versiones de
+la misma aplicación, en nuestro ejemplo vamos a generar una versión
+``Community'' y otra ``Enterprise''.
+
+\begin{algorithm}[H]
+\begin{lstlisting}
+apply plugin: 'cpp'
+model {
+	flavors {
+		community
+        enterprise
+    }
+}
+libraries {
+ 	hello {
+        binaries.all {             
+			if (flavor == flavors.enterprise) {                 		cppCompiler.define "ENTERPRISE"
+            }
+        }
+    }
+}
+executables {
+    main {
+        binaries.all {
+            lib libraries.hello.shared
+        }
+    }
+}
+\end{lstlisting}
+\caption{build.gradle}
+\end{algorithm}
+
+
+Además tenemos que preparar nuestra aplicación para utilizar estos
+parámetros de compilación. 
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language={C++},tabsize=4]
+#ifdef ENTERPRISE
+static const char * EDITION = "Enterprise";
+
+#else 
+static const char * EDITION = "Community";
+
+#endif
+\end{lstlisting}
+
+
+\caption{Msg.h}
+\end{algorithm}
+encuentra en Todo el proyecto se 
+
+De esta forma se utiliza una cadena u otra en función del ``sabor''
+con que compilemos. 
+
+Si ahora ejecutamos gradle clean task en la raíz de nuestro proyecto,
+veremos que tenemos más tareas disponibles, antes teníamos installMainExecutable
+y ahora ha sido reemplazada por installCommunityMainExecutable y
+installEnterpriseMainExecutable.
+
+Si ejecutamos estas dos tareas , tendremos nuestra aplicación instalada
+en los dos sabores.
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language=sh]
+$gradle installEnterpriseMainExecutable installCommunityMainExecutable
+
+:compileEnterpriseHelloSharedLibraryHelloCpp 
+:linkEnterpriseHelloSharedLibrary 
+:enterpriseHelloSharedLibrary 
+:compileEnterpriseMainExecutableMainCpp 
+:linkEnterpriseMainExecutable 
+:enterpriseMainExecutable 
+:installEnterpriseMainExecutable 
+:compileCommunityHelloSharedLibraryHelloCpp 
+:linkCommunityHelloSharedLibrary 
+:communityHelloSharedLibrary 
+:compileCommunityMainExecutableMainCpp 
+:linkCommunityMainExecutable 
+:communityMainExecutable 
+:installCommunityMainExecutable
+
+BUILD SUCCESSFUL
+Total time: 9.414 secs 
+\end{lstlisting}
+\caption{gradle installEnterpriseMainExecutable installCommunityMainExecutable}
+\end{algorithm}
+
+
+Ahora podemos ejecutar nuestra aplicación en los dos sabores:
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language=sh]
+$ build/install/mainExecutable/community/main.bat
+1.      Hello Mr. Pepito        (Community)
+2.      Hello Mr. Pepito        (Community) 
+3.      Hello Mr. Pepito        (Community) 
+4.      Hello Mr. Pepito        (Community) 
+5.      Hello Mr. Pepito        (Community) 
+6.      Hello Mr. Pepito        (Community) 
+7.      Hello Mr. Pepito        (Community) 
+8.      Hello Mr. Pepito        (Community) 
+9.      Hello Mr. Pepito        (Community) 
+10.     Hello Mr. Pepito        (Community)
+\end{lstlisting}
+\caption{Community}
+\end{algorithm}
+\begin{algorithm}[H]
+\begin{lstlisting}[language=sh]
+$ build/install/mainExecutable/enterprise/main.bat 
+1.      Hello Mr. Pepito        (Enterprise) 
+2.      Hello Mr. Pepito        (Enterprise) 
+3.      Hello Mr. Pepito        (Enterprise) 
+4.      Hello Mr. Pepito        (Enterprise) 
+5.      Hello Mr. Pepito        (Enterprise) 
+6.      Hello Mr. Pepito        (Enterprise) 
+7.      Hello Mr. Pepito        (Enterprise) 
+8.      Hello Mr. Pepito        (Enterprise) 
+9.      Hello Mr. Pepito        (Enterprise) 
+10.     Hello Mr. Pepito        (Enterprise)
+\end{lstlisting}
+\caption{Enterprise}
+\end{algorithm}
+
+
+
+\subsubsection{Release o Debug}
+
+Por defecto Gradle compila nuestra aplicación en modo Debug, pero
+podemos añadir el modo Release para que active algunas optimizaciones%
+\footnote{También podemos definir el tipo de optimizaciones que vamos a utilizar.%
+}.
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language=sh]
+apply plugin: 'cpp'
+model {
+    buildTypes {
+        debug         
+		release
+    }
+// ... the rest of file below doesn't change 
+\end{lstlisting}
+\caption{build.gradle}
+\end{algorithm}
+
+
+Si ahora ejecutamos gradle clean task veremos que tenemos más tareas,
+se habrán desdoblado las que teníamos, por ejemplo installCommunityMainExecutable
+se habrá desdoblado en installDebugCommunityMainExecutable y installReleaseCommunityMainExecutable.
+
+
+\subsubsection{Multi-plataforma}
+
+También tenemos las posibilidad de utilizar las características de
+compilación cruzada que nos ofrecen los compiladores y generar componentes
+nativos para otras aplicaciones. El proceso es el mismo, simplemente
+tenemos que dar te alta las aplicaciones con las que vamos a trabajar. 
+
+Esto solo funcionará si en nuestro sistema tenemos instalada la cadena
+de herramientas (\href{http://es.wikipedia.org/wiki/Cadena_de_herramientas}{Toolchains})
+necesaria, es decir, si en un sistema de 64 bits queremos compilar
+para 32 bits, tendremos que tener instaladas las librerías necesarias
+en en 32 bits. 
+
+\begin{algorithm}[H]
+\begin{lstlisting}[language=sh]
+apply plugin: 'cpp'
+model {
+    buildTypes {
+        debug
+        release
+    }
+         platforms {
+        x86 {
+            architecture "x86"
+        }
+        x64 {
+            architecture "x86_64"
+        }
+        itanium {
+            architecture "ia-64"
+        }
+    } 
+    flavors {
+        community
+        enterprise
+    }
+}
+libraries {
+ 	hello {
+        binaries.all {
+            if (flavor == flavors.enterprise) {
+                cppCompiler.define "ENTERPRISE"
+            }
+        }
+    }
+}
+executables {
+    main {
+        binaries.all {
+            lib libraries.hello.shared
+        }
+    }
+}
+\end{lstlisting}
+\caption{build.gradle}
+\end{algorithm}
+
+
+Ejecutando gradle clean task podremos generar distintas versiones
+de nuestra aplicación en distintos sabores, para distintas aplicaciones
+en Debug o Release. 
+
+
+\section{Conclusiones}
+
+Con una configuración mínima, tenemos muchas posibilidades de construcción
+de aplicaciones nativas multi-plataforma. 
+
+Tiene un futuro prometedor, veremos como termina. 
+
+Podemos utilizar otras características de Gradle y aplicarlas a nuestros
+proyectos C++, como análisis estáticos de código, generación de informes
+de prueba, fácil incorporación a sistemas de integración continua. 
+
+Gradle para C++ es una característica que actualmente está en desarrollo,
+por lo que:
+\begin{itemize}
+\item No debemos utilizar en entornos reales de desarrollo, puede acarrear
+muchos dolores de cabeza.
+\item La forma de definir el fichero build.gradle puede cambiar. 
+\end{itemize}
+Todo el ejemplo se encuentra en \href{https://github.com/carlosvin/cpp_gradle}{https://github.com/carlosvin/cpp\_{}gradle}.
+\end{document}

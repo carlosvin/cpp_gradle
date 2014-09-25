@@ -1,0 +1,1912 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language spanish
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman lmodern
+\font_sans default
+\font_typewriter default
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement H
+\paperfontsize default
+\spacing single
+\use_hyperref true
+\pdf_bookmarks true
+\pdf_bookmarksnumbered false
+\pdf_bookmarksopen false
+\pdf_bookmarksopenlevel 1
+\pdf_breaklinks false
+\pdf_pdfborder true
+\pdf_colorlinks false
+\pdf_backref false
+\pdf_pdfusetitle true
+\papersize default
+\use_geometry false
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Construir un proyecto C++ con Gradle
+\end_layout
+
+\begin_layout Section
+Introducción
+\end_layout
+
+\begin_layout Standard
+La construcción, gestión de dependencias y distribución de mis proyectos
+ es algo que cada vez me preocupa más, me gustaría encontrar una herramienta
+ que unificara este proceso y fuese independiente del lenguaje, lo más parecido
+ con lo que he trabajado ha sido 
+\begin_inset CommandInset href
+LatexCommand href
+name "SCons"
+target "http://www.scons.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Autotools"
+target "http://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html#Autotools-Introduction"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Ant"
+target "http://ant.apache.org/"
+
+\end_inset
+
+, 
+\begin_inset CommandInset href
+LatexCommand href
+name "Maven"
+target "http://maven.apache.org/"
+
+\end_inset
+
+ y últimamente 
+\begin_inset CommandInset href
+LatexCommand href
+name "Gradle"
+target "http://www.gradle.org/"
+
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+Llevo un tiempo haciendo algunas cosas con 
+\begin_inset CommandInset href
+LatexCommand href
+name "Gradle"
+target "http://www.gradle.org/"
+
+\end_inset
+
+, pero siempre centrado en proyectos Java utilizándolo como reemplazo a
+ Maven, porque que es más sencillo de usar y más rápido.
+ También lo he utilizado 
+\begin_inset CommandInset href
+LatexCommand href
+name "en projectos Android"
+target "http://developer.android.com/sdk/installing/studio-build.html"
+
+\end_inset
+
+ y he sufrido la pareja 
+\begin_inset CommandInset href
+LatexCommand href
+name "Android Studio + Gradle"
+target "http://developer.android.com/sdk/installing/studio-build.html"
+
+\end_inset
+
+ en sus primeros matrimonios (porque yo he querido), actualmente está todo
+ mucho más documentado y funciona muy bien.
+ 
+\end_layout
+
+\begin_layout Standard
+Antes de nada hay que decir que la construcción de proyectos C/C++ y Objective-C
+ con 
+\begin_inset CommandInset href
+LatexCommand href
+name "Gradle"
+target "http://www.gradle.org/"
+
+\end_inset
+
+ se encuentra en fase de incubación, aunque ya permite hacer algunas tareas
+ avanzadas como:
+\end_layout
+
+\begin_layout Itemize
+Generación de múltiples artefactos dentro del mismo proyecto, esto es varias
+ librerías o ejecutables.
+\end_layout
+
+\begin_layout Itemize
+Gestionar las dependencias entre estos artefactos (sin versiones).
+\end_layout
+
+\begin_layout Itemize
+Generar distintos 
+\begin_inset Quotes eld
+\end_inset
+
+sabores
+\begin_inset Quotes erd
+\end_inset
+
+ de aplicaciones, por ejemplo: podremos generar una aplicación 
+\begin_inset Quotes eld
+\end_inset
+
+Community
+\begin_inset Quotes erd
+\end_inset
+
+ y otra con más características habilitadas llamada 
+\begin_inset Quotes eld
+\end_inset
+
+Enterprise
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Itemize
+Permite generar binarios para distintas plataformas, esto depende de las
+ cadenas de herramientas (
+\begin_inset CommandInset href
+LatexCommand href
+name "Toolchains"
+target "http://es.wikipedia.org/wiki/Cadena_de_herramientas"
+
+\end_inset
+
+) que tengamos instaladas en la máquina de compilación.
+ 
+\end_layout
+
+\begin_layout Standard
+Como decía todavía tiene limitaciones, aunque están trabajando en ello y
+ 
+\begin_inset CommandInset href
+LatexCommand href
+name "si consiguen lo que tienen planeado "
+target "http://www.gradleware.com/resources/cpp/"
+
+\end_inset
+
+dejaré 
+\begin_inset CommandInset href
+LatexCommand href
+name "Autotools"
+target "http://www.gnu.org/software/automake/manual/html_node/Autotools-Introduction.html#Autotools-Introduction"
+
+\end_inset
+
+ (me arrepentiré de haber dicho esto).
+\end_layout
+
+\begin_layout Section
+Un caso práctico
+\end_layout
+
+\begin_layout Standard
+Básicamente he sacado todo el ejemplo de 
+\begin_inset CommandInset href
+LatexCommand href
+name "aquí"
+target "http://www.gradle.org/docs/current/userguide/nativeBinaries.html"
+
+\end_inset
+
+ y lo he adaptado a un caso en el que hay varias plataformas y quiero generar
+ dos versiones distintas de mi software 
+\begin_inset Quotes eld
+\end_inset
+
+Community
+\begin_inset Quotes erd
+\end_inset
+
+ y 
+\begin_inset Quotes eld
+\end_inset
+
+Enterprise
+\begin_inset Quotes erd
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+La aplicación es un ejecutable y una librería dinámica.
+ El ejecutable hace uso de esta librería.
+ Ya está, solo quiero mostrar lo que nos permite hacer 
+\begin_inset CommandInset href
+LatexCommand href
+name "Gradle"
+target "http://www.gradle.org/"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+También nos permitirá generar una versión para distribuir y otra para depurar.
+ 
+\end_layout
+
+\begin_layout Standard
+Todo el código se encuentra en 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/carlosvin/cpp_gradle"
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsection
+Estructura del proyecto
+\end_layout
+
+\begin_layout Standard
+Podemos crear la estructura que queramos, pero resulta más fácil seguir
+ la que espera Gradle, para no tener que especificar donde está el código
+ fuente.
+ Esta es la estructura del proyecto:
+\end_layout
+
+\begin_layout Description
+gradle_cpp
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+build.gradle Fichero donde se configura el proyecto Gradle, el equivalente
+ al build.xml de Ant, al Makefile de C/C++ o al pom.xml de Maven.
+\end_layout
+
+\begin_layout Description
+src Carpeta donde va todo el código fuente
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+hello Carpeta que contiene el módulo que va a ser la librería hello.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+cpp Carpeta donde van los fuentes C++.
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+Hello.cpp
+\end_layout
+
+\end_deeper
+\begin_layout Description
+headers Carpeta donde val los ficheros de cabeceras.
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+Hello.h
+\end_layout
+
+\begin_layout Description
+Msg.h
+\end_layout
+
+\end_deeper
+\end_deeper
+\begin_layout Description
+main Carpeta que contiene el módulo que será el ejecutable que utilice la
+ librería hello.
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+cpp Carpeta donde van los fuentes C++.
+\end_layout
+
+\begin_deeper
+\begin_layout Description
+main.cpp
+\end_layout
+
+\end_deeper
+\end_deeper
+\end_deeper
+\begin_layout Description
+build Carpeta que crea Gradle automáticamente donde deja todos los resultados
+ sus ejecuciones, en ella encontraremos informes de resultados de pruebas,
+ binarios compilados, paquetes para distribuir, etc.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Subsection
+La aplicación C++
+\end_layout
+
+\begin_layout Standard
+Va a consistir en un ejecutable que hará uso de la funcionalidad de la librería
+ 'hello'.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={C++},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#include "Hello.h"
+\end_layout
+
+\begin_layout Plain Layout
+
+int main(int argc, char ** argv) 
+\end_layout
+
+\begin_layout Plain Layout
+
+{ 	
+\end_layout
+
+\begin_layout Plain Layout
+
+	Hello hello ("Pepito");
+\end_layout
+
+\begin_layout Plain Layout
+
+	hello.sayHello(10);
+\end_layout
+
+\begin_layout Plain Layout
+
+	return 0; 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+main.cpp
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Esta librería permite saludar 
+\begin_inset Formula $n$
+\end_inset
+
+ veces a una persona especificada en su constructor.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={C++},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+class Hello  
+\end_layout
+
+\begin_layout Plain Layout
+
+{
+\end_layout
+
+\begin_layout Plain Layout
+
+	private:
+\end_layout
+
+\begin_layout Plain Layout
+
+		const char * who;
+\end_layout
+
+\begin_layout Plain Layout
+
+	public:
+\end_layout
+
+\begin_layout Plain Layout
+
+		Hello(const char * who);
+\end_layout
+
+\begin_layout Plain Layout
+
+		void sayHello(unsigned n = 1);
+\end_layout
+
+\begin_layout Plain Layout
+
+};
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Hello.h
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+Construyendo con Gradle
+\end_layout
+
+\begin_layout Subsubsection
+Caso básico
+\end_layout
+
+\begin_layout Standard
+Lo único que necesitamos para construir nuestra aplicación con Gradle es:
+ tener Gradle
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Realmente no es necesario tener instalado Gradle, si utilizamos el wrapper,
+ pero esto no lo vamos a tratar hoy,
+\begin_inset CommandInset href
+LatexCommand href
+name " si queréis más información"
+target "http://www.gradle.org/docs/current/userguide/nativeBinaries.html"
+
+\end_inset
+
+.
+\end_layout
+
+\end_inset
+
+ y el fichero build.gradle.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+apply plugin: 'cpp'
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+libraries {  	
+\end_layout
+
+\begin_layout Plain Layout
+
+	hello {} 
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+executables {     
+\end_layout
+
+\begin_layout Plain Layout
+
+	main {
+\end_layout
+
+\begin_layout Plain Layout
+
+		binaries.all {
+\end_layout
+
+\begin_layout Plain Layout
+
+			lib libraries.hello.shared         
+\end_layout
+
+\begin_layout Plain Layout
+
+		}
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+build.gradle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Con este fichero tan simple, conseguiremos compilar e instalar nuestra aplicació
+n, en modo Debug para la plataforma donde estamos ejecutando gradle, en
+ mi caso es Linux X64.
+ 
+\end_layout
+
+\begin_layout Standard
+Si ejecutamos desde la raíz de nuestro proyecto 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+gradle task
+\end_layout
+
+\end_inset
+
+, podremos ver todas las tareas que podemos hacer.
+ 
+\end_layout
+
+\begin_layout Standard
+En nuestro caso, solo queremos nuestra aplicación compilada y lista para
+ funcionar, así que ejecutaremos: 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+gradle installMainExecutable
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Una vez que ha terminado, podemos ejecutar el programa llamando al script
+ 
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+ .bat en Windows y .sh en Linux
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ build/install/mainExecutable/main.bat
+\end_layout
+
+\begin_layout Plain Layout
+
+1.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+2.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+3.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+4.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+5.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+6.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+7.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+8.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+9.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+10.
+ Hello Mr.
+ Pepito (Community) 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+build/install/mainExecutable/main.bat
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Distintos 
+\begin_inset Quotes eld
+\end_inset
+
+sabores
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Con unas pocas líneas más, podemos generar distintas versiones de la misma
+ aplicación, en nuestro ejemplo vamos a generar una versión 
+\begin_inset Quotes eld
+\end_inset
+
+Community
+\begin_inset Quotes erd
+\end_inset
+
+ y otra 
+\begin_inset Quotes eld
+\end_inset
+
+Enterprise
+\begin_inset Quotes erd
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+apply plugin: 'cpp'
+\end_layout
+
+\begin_layout Plain Layout
+
+model {
+\end_layout
+
+\begin_layout Plain Layout
+
+	flavors {
+\end_layout
+
+\begin_layout Plain Layout
+
+		community
+\end_layout
+
+\begin_layout Plain Layout
+
+        enterprise
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+libraries {
+\end_layout
+
+\begin_layout Plain Layout
+
+ 	hello {
+\end_layout
+
+\begin_layout Plain Layout
+
+        binaries.all {             
+\end_layout
+
+\begin_layout Plain Layout
+
+			if (flavor == flavors.enterprise) {                 		cppCompiler.define
+ "ENTERPRISE"
+\end_layout
+
+\begin_layout Plain Layout
+
+            }
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+executables {
+\end_layout
+
+\begin_layout Plain Layout
+
+    main {
+\end_layout
+
+\begin_layout Plain Layout
+
+        binaries.all {
+\end_layout
+
+\begin_layout Plain Layout
+
+            lib libraries.hello.shared
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+build.gradle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Además tenemos que preparar nuestra aplicación para utilizar estos parámetros
+ de compilación.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language={C++},tabsize=4"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+#ifdef ENTERPRISE
+\end_layout
+
+\begin_layout Plain Layout
+
+static const char * EDITION = "Enterprise";
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#else 
+\end_layout
+
+\begin_layout Plain Layout
+
+static const char * EDITION = "Community";
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+#endif
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Msg.h
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+encuentra en Todo el proyecto se 
+\end_layout
+
+\begin_layout Standard
+De esta forma se utiliza una cadena u otra en función del 
+\begin_inset Quotes eld
+\end_inset
+
+sabor
+\begin_inset Quotes erd
+\end_inset
+
+ con que compilemos.
+ 
+\end_layout
+
+\begin_layout Standard
+Si ahora ejecutamos 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+gradle clean task
+\end_layout
+
+\end_inset
+
+ en la raíz de nuestro proyecto, veremos que tenemos más tareas disponibles,
+ antes teníamos 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+installMainExecutable
+\end_layout
+
+\end_inset
+
+ y ahora ha sido reemplazada por 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+installCommunityMainExecutable
+\end_layout
+
+\end_inset
+
+ y 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+installEnterpriseMainExecutable
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Si ejecutamos estas dos tareas , tendremos nuestra aplicación instalada
+ en los dos sabores.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$gradle installEnterpriseMainExecutable installCommunityMainExecutable
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+:compileEnterpriseHelloSharedLibraryHelloCpp 
+\end_layout
+
+\begin_layout Plain Layout
+
+:linkEnterpriseHelloSharedLibrary 
+\end_layout
+
+\begin_layout Plain Layout
+
+:enterpriseHelloSharedLibrary 
+\end_layout
+
+\begin_layout Plain Layout
+
+:compileEnterpriseMainExecutableMainCpp 
+\end_layout
+
+\begin_layout Plain Layout
+
+:linkEnterpriseMainExecutable 
+\end_layout
+
+\begin_layout Plain Layout
+
+:enterpriseMainExecutable 
+\end_layout
+
+\begin_layout Plain Layout
+
+:installEnterpriseMainExecutable 
+\end_layout
+
+\begin_layout Plain Layout
+
+:compileCommunityHelloSharedLibraryHelloCpp 
+\end_layout
+
+\begin_layout Plain Layout
+
+:linkCommunityHelloSharedLibrary 
+\end_layout
+
+\begin_layout Plain Layout
+
+:communityHelloSharedLibrary 
+\end_layout
+
+\begin_layout Plain Layout
+
+:compileCommunityMainExecutableMainCpp 
+\end_layout
+
+\begin_layout Plain Layout
+
+:linkCommunityMainExecutable 
+\end_layout
+
+\begin_layout Plain Layout
+
+:communityMainExecutable 
+\end_layout
+
+\begin_layout Plain Layout
+
+:installCommunityMainExecutable
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+BUILD SUCCESSFUL
+\end_layout
+
+\begin_layout Plain Layout
+
+Total time: 9.414 secs 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+gradle installEnterpriseMainExecutable installCommunityMainExecutable
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ahora podemos ejecutar nuestra aplicación en los dos sabores:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ build/install/mainExecutable/community/main.bat
+\end_layout
+
+\begin_layout Plain Layout
+
+1.
+      Hello Mr.
+ Pepito        (Community)
+\end_layout
+
+\begin_layout Plain Layout
+
+2.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+3.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+4.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+5.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+6.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+7.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+8.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+9.
+      Hello Mr.
+ Pepito        (Community) 
+\end_layout
+
+\begin_layout Plain Layout
+
+10.
+     Hello Mr.
+ Pepito        (Community)
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Community
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+$ build/install/mainExecutable/enterprise/main.bat 
+\end_layout
+
+\begin_layout Plain Layout
+
+1.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+2.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+3.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+4.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+5.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+6.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+7.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+8.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+9.
+      Hello Mr.
+ Pepito        (Enterprise) 
+\end_layout
+
+\begin_layout Plain Layout
+
+10.
+     Hello Mr.
+ Pepito        (Enterprise)
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+Enterprise
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Release o Debug
+\end_layout
+
+\begin_layout Standard
+Por defecto Gradle compila nuestra aplicación en modo Debug, pero podemos
+ añadir el modo Release para que active algunas optimizaciones
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+También podemos definir el tipo de optimizaciones que vamos a utilizar.
+\end_layout
+
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+apply plugin: 'cpp'
+\end_layout
+
+\begin_layout Plain Layout
+
+model {
+\end_layout
+
+\begin_layout Plain Layout
+
+    buildTypes {
+\end_layout
+
+\begin_layout Plain Layout
+
+        debug         
+\end_layout
+
+\begin_layout Plain Layout
+
+		release
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+// ...
+ the rest of file below doesn't change 
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+build.gradle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Si ahora ejecutamos 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+gradle clean task
+\end_layout
+
+\end_inset
+
+ veremos que tenemos más tareas, se habrán desdoblado las que teníamos,
+ por ejemplo installCommunityMainExecutable se habrá desdoblado en installDebugC
+ommunityMainExecutable y installReleaseCommunityMainExecutable.
+\end_layout
+
+\begin_layout Subsubsection
+Multi-plataforma
+\end_layout
+
+\begin_layout Standard
+También tenemos las posibilidad de utilizar las características de compilación
+ cruzada que nos ofrecen los compiladores y generar componentes nativos
+ para otras aplicaciones.
+ El proceso es el mismo, simplemente tenemos que dar te alta las aplicaciones
+ con las que vamos a trabajar.
+ 
+\end_layout
+
+\begin_layout Standard
+Esto solo funcionará si en nuestro sistema tenemos instalada la cadena de
+ herramientas (
+\begin_inset CommandInset href
+LatexCommand href
+name "Toolchains"
+target "http://es.wikipedia.org/wiki/Cadena_de_herramientas"
+
+\end_inset
+
+) necesaria, es decir, si en un sistema de 64 bits queremos compilar para
+ 32 bits, tendremos que tener instaladas las librerías necesarias en en
+ 32 bits.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float algorithm
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset listings
+lstparams "language=sh"
+inline false
+status open
+
+\begin_layout Plain Layout
+
+apply plugin: 'cpp'
+\end_layout
+
+\begin_layout Plain Layout
+
+model {
+\end_layout
+
+\begin_layout Plain Layout
+
+    buildTypes {
+\end_layout
+
+\begin_layout Plain Layout
+
+        debug
+\end_layout
+
+\begin_layout Plain Layout
+
+        release
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+         platforms {
+\end_layout
+
+\begin_layout Plain Layout
+
+        x86 {
+\end_layout
+
+\begin_layout Plain Layout
+
+            architecture "x86"
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+        x64 {
+\end_layout
+
+\begin_layout Plain Layout
+
+            architecture "x86_64"
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+        itanium {
+\end_layout
+
+\begin_layout Plain Layout
+
+            architecture "ia-64"
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    } 
+\end_layout
+
+\begin_layout Plain Layout
+
+    flavors {
+\end_layout
+
+\begin_layout Plain Layout
+
+        community
+\end_layout
+
+\begin_layout Plain Layout
+
+        enterprise
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+libraries {
+\end_layout
+
+\begin_layout Plain Layout
+
+ 	hello {
+\end_layout
+
+\begin_layout Plain Layout
+
+        binaries.all {
+\end_layout
+
+\begin_layout Plain Layout
+
+            if (flavor == flavors.enterprise) {
+\end_layout
+
+\begin_layout Plain Layout
+
+                cppCompiler.define "ENTERPRISE"
+\end_layout
+
+\begin_layout Plain Layout
+
+            }
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+executables {
+\end_layout
+
+\begin_layout Plain Layout
+
+    main {
+\end_layout
+
+\begin_layout Plain Layout
+
+        binaries.all {
+\end_layout
+
+\begin_layout Plain Layout
+
+            lib libraries.hello.shared
+\end_layout
+
+\begin_layout Plain Layout
+
+        }
+\end_layout
+
+\begin_layout Plain Layout
+
+    }
+\end_layout
+
+\begin_layout Plain Layout
+
+}
+\end_layout
+
+\end_inset
+
+
+\begin_inset Caption
+
+\begin_layout Plain Layout
+build.gradle
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ejecutando 
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+gradle clean task
+\end_layout
+
+\end_inset
+
+ podremos generar distintas versiones de nuestra aplicación en distintos
+ sabores, para distintas aplicaciones en Debug o Release.
+ 
+\end_layout
+
+\begin_layout Section
+Conclusiones
+\end_layout
+
+\begin_layout Standard
+Con una configuración mínima, tenemos muchas posibilidades de construcción
+ de aplicaciones nativas multi-plataforma.
+ 
+\end_layout
+
+\begin_layout Standard
+Tiene un futuro prometedor, veremos como termina.
+ 
+\end_layout
+
+\begin_layout Standard
+Podemos utilizar otras características de Gradle y aplicarlas a nuestros
+ proyectos C++, como análisis estáticos de código, generación de informes
+ de prueba, fácil incorporación a sistemas de integración continua.
+ 
+\end_layout
+
+\begin_layout Standard
+Gradle para C++ es una característica que actualmente está en desarrollo,
+ por lo que:
+\end_layout
+
+\begin_layout Itemize
+No debemos utilizar en entornos reales de desarrollo, puede acarrear muchos
+ dolores de cabeza.
+\end_layout
+
+\begin_layout Itemize
+La forma de definir el fichero build.gradle puede cambiar.
+ 
+\end_layout
+
+\begin_layout Standard
+Todo el ejemplo se encuentra en 
+\begin_inset CommandInset href
+LatexCommand href
+target "https://github.com/carlosvin/cpp_gradle"
+
+\end_inset
+
+.
+\end_layout
+
+\end_body
+\end_document
