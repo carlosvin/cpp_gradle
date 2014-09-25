@@ -5,7 +5,7 @@ model {
         debug
         release
     }
-
+    
     platforms {
         x86 {
             architecture "x86"
@@ -17,18 +17,18 @@ model {
             architecture "ia-64"
         }
     }
-
+	
     flavors {
-        english
-        spanish
+        community
+        enterprise
     }
 }
 
 libraries {
  	hello {
         binaries.all {
-            if (flavor == flavors.spanish) {
-                cppCompiler.define "SPANISH"
+            if (flavor == flavors.enterprise) {
+                cppCompiler.define "ENTERPRISE"
             }
         }
     }

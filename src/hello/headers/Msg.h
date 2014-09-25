@@ -1,5 +1,5 @@
-#ifdef SPANISH
-static const char * HELLO = "Hola D.";
+#ifdef ENTERPRISE
+static const char * EDITION = "Enterprise";
 #else
-static const char * HELLO = "Hello Mr.";
+static const char * EDITION = "Community";
 #endif

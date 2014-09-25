@@ -14,6 +14,6 @@ void Hello::sayHello( unsigned n )
 {
 	for (unsigned i=0; i<n; i++)
 	{
-		cout << (i+1) << ".\t" << HELLO << " " << who << endl;
+		cout << (i+1) << ".\tHello Mr. " << who << "\t(" << EDITION << ")" << endl;
 	}
 }
