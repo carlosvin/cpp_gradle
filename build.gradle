@@ -22,27 +22,25 @@ model {
         community
         enterprise
     }
-}
 
-libraries {
- 	hello {
-        binaries.all {
-            if (flavor == flavors.enterprise) {
-                cppCompiler.define "ENTERPRISE"
-            }
-        }
+    components {
+ 	hello(NativeLibrarySpec) {
+		binaries.all {
+			if (flavor == flavors.enterprise) {
+				cppCompiler.define "ENTERPRISE"
+			}
+		}
+	}
+        main(NativeExecutableSpec) {
+        	binaries.all {
+                	lib library: "hello"
+
+		}
+	}
     }
 }
 
-
-executables {
-    main {
-        binaries.all {
-            lib libraries.hello.shared
-        }
-    }
-}
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.1'
+    gradleVersion = '2.4'
 }
