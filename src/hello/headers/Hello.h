@@ -1,5 +1,14 @@
+#pragma once
 
-class Hello 
+#ifdef _MSC_VER
+	#ifdef HELLO_EXPORT
+		#define HELLO_API __declspec(dllexport)
+	#else
+		#define HELLO_API __declspec(dllimport)
+	#endif
+#endif
+
+class HELLO_API Hello
 {
 	private:
 		const char * who;

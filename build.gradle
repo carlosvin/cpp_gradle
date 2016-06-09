@@ -5,7 +5,7 @@ model {
         debug
         release
     }
-    
+
     platforms {
         x86 {
             architecture "x86"
@@ -17,7 +17,7 @@ model {
             architecture "ia-64"
         }
     }
-	
+
     flavors {
         community
         enterprise
@@ -26,6 +26,7 @@ model {
     components {
  	hello(NativeLibrarySpec) {
 		binaries.all {
+			cppCompiler.define "HELLO_EXPORT"
 			if (flavor == flavors.enterprise) {
 				cppCompiler.define "ENTERPRISE"
 			}
