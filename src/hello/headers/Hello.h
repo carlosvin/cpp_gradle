@@ -6,6 +6,8 @@
 	#else
 		#define HELLO_API __declspec(dllimport)
 	#endif
+#else
+	#define HELLO_API
 #endif
 
 class HELLO_API Hello
