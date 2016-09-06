@@ -24,24 +24,22 @@ model {
     }
 
     components {
- 	hello(NativeLibrarySpec) {
-		binaries.all {
-			cppCompiler.define "HELLO_EXPORT"
-			if (flavor == flavors.enterprise) {
-				cppCompiler.define "ENTERPRISE"
-			}
-		}
-	}
+        hello(NativeLibrarySpec) {
+            binaries.all {
+                cppCompiler.define "HELLO_EXPORT"
+                if (flavor == flavors.enterprise) {
+                    cppCompiler.define "ENTERPRISE"
+                }
+            }
+        }
         main(NativeExecutableSpec) {
-        	binaries.all {
-                	lib library: "hello"
-
-		}
-	}
+            binaries.all {
+                lib library: "hello"
+            }
+        }
     }
 }
 
-
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.7'
+    gradleVersion = '2.13'
 }
